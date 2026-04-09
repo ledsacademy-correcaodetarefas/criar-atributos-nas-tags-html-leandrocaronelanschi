@@ -1,0 +1,33 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Testar atributos de tags html
+      id: testar-atributos-de-tags-html
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Testar atributos de tags html
+        setup-command: ''
+        command: grep -qi "<img" index.html && grep -qi "src=" index.html && grep
+          -qi "alt=" index.html; grep -qi "<input" index.html && grep -qi "type="
+          index.html && grep -qi "placeholder=" index.html; grep -qi "<a" index.html
+          && grep -qi "href=" index.html && grep -qi "target=" index.html
+        timeout: 1
+        max-score: 10
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        TESTAR-ATRIBUTOS-DE-TAGS-HTML_RESULTS: "${{steps.testar-atributos-de-tags-html.outputs.result}}"
+      with:
+        runners: testar-atributos-de-tags-html
